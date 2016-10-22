@@ -18,8 +18,9 @@ bool        setting_gamma = true;
 bool        setting_filter = true;
 bool        setting_multi = true;
 bool        setting_influence = true;
-int         setting_simple = false;
+bool        setting_simple = false;
 bool        setting_random = false;
+int         setting_width = 79;
 
 map<float, vector<char>> bToC =
 {
@@ -335,6 +336,8 @@ void readSettings(int argc, const char* argv[])
                 setting_simple = true;
             else if (_stricmp(argv[i] + 1, "r") == 0)
                 setting_random = true;
+            else if (_stricmp(argv[i] + 1, "w") == 0)
+                setting_width = atoi(argv[++i]);
         }
         else
         {
@@ -371,13 +374,13 @@ int main(int argc, const char* argv[])
 
     ret.wait();
 
-    // get status - 200 if succuss
+    // get status - 200 if success
     long status;
     hr = request->get_status(&status);
 
     if (status == 200)
     {
-        // load image data (if url points to an image)
+        // load image data (if URL points to an image)
         VARIANT responseVariant;
         hr = request->get_responseStream(&responseVariant);
         IStream* stream = (IStream*)responseVariant.punkVal;
@@ -387,7 +390,7 @@ int main(int argc, const char* argv[])
 
         auto w = image.GetWidth();
         auto h = image.GetHeight();
-        float ratio = (float)w / 80.f;
+        float ratio = (float)w / (float)setting_width;
         auto ratioh = ratio * (12.f / 8.f);
         int sw = (int)((float)w / ratio);
         int sh = (int)((float)h / ratioh);
@@ -434,7 +437,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -454,7 +457,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -474,7 +477,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -494,7 +497,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -514,7 +517,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -534,7 +537,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -554,7 +557,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -574,7 +577,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -594,7 +597,7 @@ int main(int argc, const char* argv[])
                                     avg += getPixelAVG(image, ii, jj);
                                     ++cnt;
                                 }
-                            avg /= cnt;
+                            if (cnt) avg /= cnt;
                         }
                         else
                         {
@@ -638,7 +641,7 @@ int main(int argc, const char* argv[])
                                 ++cnt;
                             }
                         }
-                        avg /= cnt;
+                        if (cnt) avg /= cnt;
                     }
                     else
                     {
@@ -647,7 +650,7 @@ int main(int argc, const char* argv[])
 
                     auto B = (float)avg / 255.f;
 
-                    // Easier to differenciate difference in lower brightness
+                    // Easier to differentiate difference in lower brightness
                     if (setting_gamma)
                     {
                         B = pow(B, 1.f + (fAvg - .5f));
@@ -680,7 +683,7 @@ int main(int argc, const char* argv[])
                     cout << c;
                 }
             }
-            //cout << endl;
+            cout << endl;
         }
     }
     else
@@ -688,6 +691,9 @@ int main(int argc, const char* argv[])
         cout << "result = " << status << endl;
         cout << "failed" << endl;
     }
+
+    // Uncomment for easier debug from VS
+    //system("pause");
 
     return 0;
 }
